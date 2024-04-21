@@ -1,0 +1,83 @@
+<section class="todolist-wrapper">
+ <h1 class="title">ToDo - Lista de Tarefas</h1>
+ <div class="new-todo">
+  <input type="text" (keydown.enter)="addTodo()" class="Escriber uma nueva tarefa" placeholder="Digite o titulo" [formControl]="newTodo">
+  <br/>
+  <input type="text" class="Escriber uma nueva tarefa" placeholder="Digite a descricao" [formControl]="newTodoDescription">
+  
+  <form [formGroup]="form">
+  <div class="grid w-[13rem] grid-cols-3 gap-2 rounded-xl p-2">
+    @for(option of options; track option.value){
+    <div>
+        <input type="radio" name="selectedOption" [id]="option.value" [value]="option.value" class="peer hidden" formControlName="selectedOption"/>
+        <label [for]="option.value" [class]="option.color">
+          {{option.label}}
+        </label>
+    </div>
+  }
+</div>
+</form>
+  <button (click)="addTodo()">+</button>
+ </div>
+
+ <div class="filters">
+  <button (click)="changeFilter('all')" [class.active]=" filter() == 'all'">Todas</button>
+  <button (click)="changeFilter('active')" [class.active]=" filter() == 'active'">Pendentes</button>
+  <!-- <button (click)="changeFilter('completed')" [class.active]=" filter() == 'completed'">Completadas</button> -->
+ </div>
+ <ul class="todolist">
+  @for (todo of todoListFiltered(); track todo.id){
+    @if (getEditingId() === todo.id) {
+        <li class="todo-editing">
+          <p>Titulo</p>
+          <input type="text" placeholder="Editar tarefa" value={{todo.title}}
+          [formControl]="newTodoEdit" text>
+          
+          <p>Descricao</p>
+          <input type="text" placeholder="Editar tarefa" value={{todo.description}}
+          [formControl]="newTodoDescriptionEdit">
+        </li>
+        <form [formGroup]="form2">
+          <div class="grid w-[13rem] grid-cols-3 gap-2 rounded-xl p-2">
+            <div>
+                <input type="radio" name="selectedOption2" id="Baixa-Edit" value="Baixa-Edit" class="peer hidden" formControlName="selectedOption2"/>
+                <label class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-[#f0ad4e] peer-checked:font-bold peer-checked:text-white"
+                for ="Baixa-Edit">Baixa</label>
+            </div>
+            <div>
+                <input type="radio" name="selectedOption2" id="Media-Edit" value="Media-Edit" class="peer hidden" formControlName="selectedOption2"/>
+                <label class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-[#5cb85c] peer-checked:font-bold peer-checked:text-white"
+                for ="Media-Edit">Media</label>
+            </div>
+            <div>
+                <input type="radio" name="selectedOption2" id="Alta-Edit" value="Alta-Edit" class="peer hidden" formControlName="selectedOption2"/>
+                <label class="block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-[#00FFFF] peer-checked:font-bold peer-checked:text-white"
+                for ="Alta-Edit">Alta</label>
+            </div>
+        </div>
+        </form>
+        <div class="grid w-[20rem] grid-cols-2 gap-2 rounded-xl p-2 ">
+          <button (click)="cancelEdit(todo.id)" type="submit" class="bg-gray-500 ">
+              Cancelar
+          </button>
+          <button (click)="updateTodoSave(todo.id)" type="submit" class="bg-yellow-500">
+              Salvar
+          </button>
+      </div>
+    } @else {
+      <li class="todo" >
+        <div class={{getClassPriority(todo.priority)}}>
+        <input type="checkbox" [checked]="todo.completed" 
+          (click)="toggleTodo(todo.id)">
+        <div class="flex flex-col">
+          <p class="font-bold">{{ todo.title }}</p>
+          <p class="font-light text-sm">{{ todo.description }}</p>
+        </div>
+        @if (!todo.completed) { <button (click)="updateTodoEditingMode(todo.id)">Editar</button>}
+        <button class="text-red-500" (click)="removeTodo(todo.id)">Eliminar</button>      
+      </div>
+      </li>
+    }
+  }
+ </ul>
+</section>
